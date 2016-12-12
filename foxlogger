@@ -1,0 +1,67 @@
+#!/bin/bash
+
+function timer {
+
+
+count=0
+scnds=0
+minutes=0
+hours=0
+
+while [ $stest = "true" ]
+do
+	if ps aux | grep firefox | grep -v "\-\-color=auto" | grep -v "grep" > /dev/null; then
+    		  stest="true"
+	else
+     		  stest="false"
+	fi
+
+	if [ $scnds -eq 60 ]; then
+		minutes=$[ $minutes + 1 ]
+		scnds=0
+	if [ $minutes -eq 60 ]; then
+		hours=$[ $hours + 1 ]
+		minutes=0
+	fi
+	fi
+	if [ $stest = "false" ]; then
+		echo "Application: Firefox"
+		echo "Starting time: $timestamp"
+		echo "Total time of running: ${hours}h ${minutes}m ${scnds}s"
+		echo
+	fi
+	scnds=$[ $scnds + 1 ]
+	count=$[ $count + 1 ]
+	sleep 1
+done >> firefox.timelog
+}
+
+while [ 1 ]
+do
+notd=$(date | gawk '{print $1}')
+	if [ $notd = "ma" ]; then
+		timestamp=$(date | sed 's/ma/Monday/')
+	elif [ $notd = "ti" ]; then
+		timestamp=$(date | sed 's/ti/Tuesday/')
+	elif [ $notd = "ke" ]; then
+		timestamp=$(date | sed 's/ke/Wednesday/')
+	elif [ $notd = "to" ]; then
+		timestamp=$(date | sed 's/to/Thursday/')
+	elif [ $notd = "pe" ]; then
+		timestamp=$(date | sed 's/pe/Friday/')
+	elif [ $notd = "la" ]; then
+		timestamp=$(date | sed 's/la/Saturday/')
+	elif [ $notd = "su" ]; then
+		timestamp=$(date | sed 's/su/Sunday/')
+	fi
+
+	if ps aux | grep firefox | grep -v "\-\-color=auto" | grep -v "grep" > /dev/null; then
+		stest="true"
+	else
+		stest="false"
+	fi
+	if [ $stest = "true" ]; then
+	timer
+	fi
+	sleep 1
+done
